@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import random
+import time
 
 class Episode:
   def __init__(self , seasonNum , episodeNum, Name, Description):
@@ -13,7 +14,7 @@ class Episode:
 
   def print(self):
     print("A random Episode for you")
-    print("------------------")
+    print("------------------------")
     print("Season : " + str(self.seasonNum) + "  ,  Episode :  " + str(self.episodeNum))
     print("Title: " + self.Name )
     print("Description: ")
@@ -44,6 +45,9 @@ print("-----------------------------------")
 print("Title: " + title_text.strip() )
 print("Description: ")
 print(summary_text.strip())
+print("--------------------------------------------")
+print("Please wait untill we fetch the episode list")
+print("--------------------------------------------")
 ### For future, maybe wait for the user to correctly verify the show
 
 ## Season numbers
@@ -78,4 +82,4 @@ randEpisode = random.randint(1,TotalChoice)
 epList[randEpisode-1].print()
 
 
-time.sleep(60) # Sleep for 60 seconds 
+time.sleep(120) # Sleep for 60 seconds 

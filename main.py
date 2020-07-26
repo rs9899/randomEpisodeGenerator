@@ -73,6 +73,9 @@ for sesn in range(maxSeason):
 TotalChoice = len(epList)
 randEpisode = random.randint(1,TotalChoice)
 
-epList[randEpisode-1].print()
 
 ### Output
+epList[randEpisode-1].print()
+
+
+time.sleep(60) # Sleep for 60 seconds 

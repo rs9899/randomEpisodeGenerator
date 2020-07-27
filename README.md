@@ -1,6 +1,3 @@
-## Random Episode Generator
-Pick up a random episode from a show you wanna rewatch.
-
 ### Ideation
 Once we are done watching a TV show, many times we just wanna pick a random episode to rewatch,
 and relive the experience. In some countries, for a TV show names ***Friends***, Netflix has given

@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import re
 import random
 import time
+import concurrent.futures
 
 class Episode:
   def __init__(self , seasonNum , episodeNum, Name, Description):
@@ -62,16 +63,20 @@ maxSeason = max(seasonNum)
 
 
 ### List pf episodes
-epList = [] 
+def parallelFun(urlEp):
+    p = requests.get(urlEp)
+    s =  BeautifulSoup(p.text, 'html.parser')
+    Titl = [elem.select('a')[0]['title'].strip() for elem in s.find('div' , class_ = 'eplist').select('strong') ]
+    desc = [elem.text.strip() for elem in  s.find('div' , class_ = 'eplist').findAll('div' , class_ = 'item_description')]
+    return (Titl , desc)
+with concurrent.futures.ThreadPoolExecutor() as executor:
+  futures = [executor.submit(parallelFun, imdbShow + 'episodes?season='+str(sesn+1))  for sesn in range(maxSeason)]
+  res = [f.result() for f in futures]
+epList = []
 for sesn in range(maxSeason):
-  p = requests.get(imdbShow + 'episodes?season='+str(sesn+1))
-  s =  BeautifulSoup(p.text, 'html.parser')
-  Titl = [elem.select('a')[0]['title'].strip() for elem in s.find('div' , class_ = 'eplist').select('strong') ]
-  desc = [elem.text.strip() for elem in  s.find('div' , class_ = 'eplist').findAll('div' , class_ = 'item_description')]
+  Titl , desc = res[sesn]
   for i in range(len(Titl)):
     epList.append(Episode(sesn+1, i+1 , Titl[i] , desc[i] ))
-
-
 
 ### Random picker
 TotalChoice = len(epList)

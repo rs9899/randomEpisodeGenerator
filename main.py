@@ -6,6 +6,7 @@ import random
 import time
 import concurrent.futures
 
+## A class to store all the details per Episode
 class Episode:
   def __init__(self , seasonNum , episodeNum, Name, Description):
     self.seasonNum  = 	seasonNum  
@@ -33,9 +34,11 @@ imdbUrl = "https://www.imdb.com/find?q=" + nameOfShow.replace(" ","+")
 ### Search imdb for the show
 page = requests.get(imdbUrl)
 soup = BeautifulSoup(page.text, 'html.parser')
+## Among the results table, pick the top element
 soup.find('table', class_='findList').select('tr')[0].select('a')[0]['href']
 imdbShow = imdbBase + soup.find('table', class_='findList').select('tr')[0].select('a')[0]['href']
 
+## Query the rest of detail from the show URL
 page2 = requests.get(imdbShow)
 soup = BeautifulSoup(page2.text, 'html.parser')
 title_text = soup.find('div' , class_ = 'title_wrapper').select('h1')[0].text
@@ -63,15 +66,21 @@ maxSeason = max(seasonNum)
 
 
 ### List pf episodes
+
+# For every season URL, it determined the episode titles
 def parallelFun(urlEp):
     p = requests.get(urlEp)
     s =  BeautifulSoup(p.text, 'html.parser')
     Titl = [elem.select('a')[0]['title'].strip() for elem in s.find('div' , class_ = 'eplist').select('strong') ]
     desc = [elem.text.strip() for elem in  s.find('div' , class_ = 'eplist').findAll('div' , class_ = 'item_description')]
     return (Titl , desc)
+
+## Using concurrent threads for faster execution
 with concurrent.futures.ThreadPoolExecutor() as executor:
   futures = [executor.submit(parallelFun, imdbShow + 'episodes?season='+str(sesn+1))  for sesn in range(maxSeason)]
   res = [f.result() for f in futures]
+
+## Collecting all resulted episodes
 epList = []
 for sesn in range(maxSeason):
   Titl , desc = res[sesn]
